@@ -24,7 +24,8 @@ export function createApp() {
   app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-        res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
     if (req.path === '/admin' || req.path.startsWith('/admin/') || req.path === '/dev' || req.path.startsWith('/dev/') || req.path.startsWith('/api/'))
       res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     next();

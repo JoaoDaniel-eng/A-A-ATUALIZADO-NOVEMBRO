@@ -82,10 +82,31 @@ router.post('/customers/login', async (req, res, next) => {
     next(e);
   }
 });
-// Redefinição pública por telefone e nova senha foi desativada: sem OTP isso permitiria tomada de conta.
-// Recuperação automática deve ser habilitada apenas após configurar um canal de verificação de posse.
-router.post('/customers/reset-password', (_req, res) => {
-  res.status(410).json({ error: 'A recuperação automática está temporariamente indisponível. Para proteger sua conta, entre em contato com a loja e confirme sua identidade.' });
+router.post('/customers/reset-password', async (req, res, next) => {
+  try {
+    const phone = normalizePhone(req.body.phone), newPassword = String(req.body.newPassword || ''), confirmPassword = String(req.body.confirmPassword || ''), ip = String(req.ip || 'unknown');
+    if (phone.length < 10 || phone.length > 15)
+      return res.status(400).json({ error: 'Informe o celular cadastrado, com DDD.' });
+    const wait = Math.max(resetByIp.retryAfterSeconds(ip), resetByPhone.retryAfterSeconds(phone));
+    if (wait > 0) {
+      res.set('Retry-After', String(wait));
+      return res.status(429).json({ error: `Muitas tentativas de redefinir a senha. Aguarde ${Math.ceil(wait / 60)} minuto(s) e tente novamente.` });
+    }
+    if (newPassword.length < 8 || newPassword.length > 72)
+      return res.status(400).json({ error: 'A nova senha deve ter entre 8 e 72 caracteres.' });
+    if (newPassword !== confirmPassword)
+      return res.status(400).json({ error: 'A confirmação da senha não confere com a nova senha.' });
+    resetByIp.record(ip);
+    resetByPhone.record(phone);
+    const r = await getPool().query('UPDATE customers SET password_hash=$1,must_change_password=FALSE,updated_at=NOW() WHERE phone=$2 RETURNING id', [await bcrypt.hash(newPassword, 12), phone]);
+    if (!r.rowCount)
+      return res.status(404).json({ error: 'Não encontramos uma conta com esse celular.' });
+    custLoginByPhone.reset(phone);
+    res.json({ message: 'Senha redefinida! Agora é só entrar com a nova senha.' });
+  }
+  catch (e) {
+    next(e);
+  }
 });
 router.get('/customers/me', auth, async (req, res, next) => {
   try {

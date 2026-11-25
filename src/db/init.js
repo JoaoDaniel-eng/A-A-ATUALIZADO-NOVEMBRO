@@ -160,6 +160,7 @@ const zones = [
 export async function initializeDatabase() {
   const db = getPool();
   await db.query(schema);
+  await db.query('DROP TABLE IF EXISTS admin_login_attempts');
   // Momento da última troca de senha: tokens emitidos antes dela deixam de valer (ver services/sessionVersion.js).
   await db.query('ALTER TABLE admins ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ');
   await db.query('ALTER TABLE developers ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ');

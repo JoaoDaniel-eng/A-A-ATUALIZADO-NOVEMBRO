@@ -4,7 +4,6 @@ import { getSettings, isOpenAt } from '../services/store.js';
 import { assertWithinOrderLimit, buildOrderItem, comboRules, freeDeliveryMinCents, MAX_SPOONS, parseOptionLayers, parseSpoonQuantity, priceOrder, summarizeItems } from '../services/pricing.js';
 import { createAttemptLimiter } from '../services/rateLimit.js';
 import { findStockShortage } from '../services/inventory.js';
-import { consumeOrderInventoryReservation, releaseOrderInventory, syncOrderInventoryReservation } from '../services/orderInventory.js';
 import { reservedToMap, reservedToObject, shortageMessage, syncUnitStock, unitsBySize } from '../services/unitStock.js';
 import { buildOrderPix } from '../services/pix.js';
 import { makeOrderCode, ORDER_CODE_PATTERN } from '../services/orderCode.js';
@@ -180,8 +179,6 @@ async function createOrder(req, res, next, { quick = false } = {}) {
       }
       result = await client.query(`INSERT INTO orders(customer_id,order_code,customer_name,customer_phone,address,neighborhood,notes,scheduled_for,fulfillment,payment_method,change_for,coupon_code,discount_cents,combo_discount_cents,estimated_minutes_min,estimated_minutes_max,items,subtotal_cents,delivery_fee_cents,total_cents,needs_spoon,spoon_quantity,spoon_cents,unit_stock)
    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24::jsonb) RETURNING id,order_code,created_at`, [accountId, orderCode, name, customerPhone, addr, zone.name, String(notes).trim().slice(0, quick ? 300 : 1000), schedule, fulfillment, paymentMethod, cashChangeFor, pricing.couponCode, discount, comboDiscount, estimatedMin, estimatedMax, JSON.stringify(normalized), subtotal, fee, total, spoons > 0, spoons, spoonCents, JSON.stringify(reservedToObject(unitSync.reserved))]);
-      // Ingredientes são reservados na mesma transação do pedido: concorrência não pode vender o mesmo saldo duas vezes.
-      await syncOrderInventoryReservation(client, { orderId: result.rows[0].id, items: normalized });
       if (isPersonalCoupon(couponRow) && !(await claimPersonalCoupon(client, { couponId: couponRow.id, customerId: accountId, orderId: result.rows[0].id }))) {
         await client.query('ROLLBACK');
         return res.status(409).json({ error: USED_COUPON_MESSAGE });
@@ -306,6 +303,11 @@ router.patch('/orders/:code/customer', async (req, res, next) => {
       return res.status(400).json({ error: 'O pedido precisa ter pelo menos um item.' });
     const { subtotalCents: subtotal, itemCount: editedCount } = summarizeItems(normalized);
     assertWithinOrderLimit(subtotal);
+    // Mesma checagem de estoque da criação do pedido (o estoque só é baixado em "Preparando", então aqui o saldo ainda é integral).
+    const editStockRows = (await db.query('SELECT r.inventory_item_id,r.size_id,r.quantity,i.name,i.quantity AS stock FROM inventory_recipes r JOIN inventory_items i ON i.id=r.inventory_item_id WHERE r.size_id=ANY($1::int[]) AND i.active=true', [activeSizeIds])).rows;
+    const editShortage = findStockShortage(normalized.map(n => ({ sizeId: n.sizeId, quantity: n.quantity })), editStockRows);
+    if (editShortage)
+      return res.status(409).json({ error: `Não temos ${editShortage.name} suficiente para essa alteração. Escolha um tamanho menor, reduza a quantidade ou fale com a loja pelo WhatsApp.` });
     const isPickupEdit = o.fulfillment === 'pickup';
     // Em retirada o endereço, o bairro e o frete (zero) não mudam; a troca entre entrega e retirada não é feita pela edição.
     const name = String(req.body.customerName || o.customer_name).trim(), address = isPickupEdit ? o.address : String(req.body.address || o.address).trim(), notes = String(req.body.notes ?? o.notes).trim().slice(0, 1000);
@@ -353,7 +355,6 @@ router.patch('/orders/:code/customer', async (req, res, next) => {
     const unitSync = await syncUnitStock(client, reservedToMap(o.unit_stock), unitsBySize(normalized));
     if (unitSync.shortage)
       return res.status(409).json({ error: shortageMessage(unitSync.shortage) });
-    await syncOrderInventoryReservation(client, { orderId: o.id, items: normalized });
     const updated = await db.query(`UPDATE orders SET customer_name=$1,address=$2,neighborhood=$3,notes=$4,scheduled_for=$5,items=$6,subtotal_cents=$7,delivery_fee_cents=$8,discount_cents=$9,coupon_code=$10,combo_discount_cents=$11,total_cents=$12,needs_spoon=$13,spoon_quantity=$14,spoon_cents=$15,unit_stock=$17::jsonb,updated_at=NOW() WHERE id=$16 RETURNING order_code,status`, [name, address, neighborhood, notes, scheduled, JSON.stringify(normalized), subtotal, fee, discount, couponCode, comboDiscount, total, spoons > 0, spoons, pricing.spoonCents, o.id, JSON.stringify(reservedToObject(unitSync.reserved))]);
     // Se a edição deixou o pedido sem o cupom (ex.: subtotal abaixo do mínimo), o cupom pessoal volta para o cliente.
     if (o.coupon_code && !couponCode)
@@ -390,7 +391,16 @@ router.post('/orders/:code/cancel', async (req, res, next) => {
     if (!found.rowCount || !EDITABLE_STATUSES.includes(found.rows[0].status))
       throw Object.assign(new Error('Não foi possível cancelar pelo site. Confira os dados ou, se a loja já começou o preparo, fale com ela pelo WhatsApp.'), { status: 409 });
     const order = found.rows[0];
-    await releaseOrderInventory(client, order.id, 'Devolução por cancelamento do cliente');
+    const consumed = await client.query("SELECT * FROM inventory_movements WHERE order_id=$1 AND movement_type='consumo'", [order.id]);
+    for (const movement of consumed.rows) {
+      const key = `order-${order.id}-return-${movement.inventory_item_id}`;
+      const already = await client.query('SELECT 1 FROM inventory_movements WHERE idempotency_key=$1', [key]);
+      if (already.rowCount)
+        continue;
+      await client.query('UPDATE inventory_items SET quantity=quantity+$1,updated_at=NOW() WHERE id=$2', [movement.quantity, movement.inventory_item_id]);
+      await client.query('UPDATE options o SET active=CASE WHEN i.auto_disable THEN i.quantity>0 ELSE o.active END FROM inventory_items i WHERE i.id=$1 AND o.id=i.option_id', [movement.inventory_item_id]);
+      await client.query("INSERT INTO inventory_movements(inventory_item_id,movement_type,quantity,unit_cost,reason,order_id,idempotency_key) VALUES($1,'devolucao',$2,$3,'Devolução por cancelamento do cliente',$4,$5) ON CONFLICT(idempotency_key) DO NOTHING", [movement.inventory_item_id, movement.quantity, movement.unit_cost, order.id, key]);
+    }
     // Estoque por unidade (trufados): o cancelamento devolve as unidades que o pedido tinha reservado.
     const held = reservedToMap(order.unit_stock);
     if (held.size)

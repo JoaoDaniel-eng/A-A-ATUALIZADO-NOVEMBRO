@@ -31,6 +31,7 @@ export function buildCsp(hashes = []) {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
+    "frame-ancestors 'none'"
   ].join('; ');
 }
 // Middleware. Com CSP_REPORT_ONLY=true o navegador só avisa no console o que bloquearia, sem bloquear (para investigar).

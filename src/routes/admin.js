@@ -18,7 +18,6 @@ import { buildNoOrdersAlert } from '../services/alerts.js';
 import { buildOrderFilter, ordersToCsv } from '../services/orderSearch.js';
 import { validatePixSetting } from '../services/pix.js';
 import { convertConsumptionToStockUnit, convertStockQuantity, stockUnitFactor, defaultConsumptionUnit } from '../services/inventory.js';
-import { consumeOrderInventoryReservation, releaseOrderInventory } from '../services/orderInventory.js';
 import { parseNewTruffledFlavor } from '../services/truffledFlavor.js';
 import { parseUnitStock, reservedToMap, reservedToObject, syncUnitStock, unitsBySize } from '../services/unitStock.js';
 import {
@@ -410,7 +409,6 @@ router.patch('/orders/:id/status', async (req, res, next) => {
       await client.query('UPDATE orders SET unit_stock=$1::jsonb WHERE id=$2', [JSON.stringify(reservedToObject(taken.reserved)), order.id]);
     }
     if (status === 'preparing' && order.status !== 'preparing') {
-      const convertedReservation = await consumeOrderInventoryReservation(client, order.id);
       const prior = await client.query("SELECT 1 FROM inventory_movements WHERE order_id=$1 AND movement_type='consumo' LIMIT 1", [order.id]);
       const recipes = await client.query(`SELECT r.*,i.name,i.unit,i.quantity AS stock FROM inventory_recipes r JOIN inventory_items i ON i.id=r.inventory_item_id WHERE i.active=true`);
       const needs = new Map();
@@ -445,7 +443,7 @@ router.patch('/orders/:id/status', async (req, res, next) => {
           needs.set(Number(product.id), (needs.get(Number(product.id)) || 0) + amount);
         }
       }
-      if (!prior.rowCount && !convertedReservation)
+      if (!prior.rowCount)
         for (const [itemId, amount] of needs) {
           const row = recipes.rows.find(r => Number(r.inventory_item_id) === itemId) || simpleItems.rows.find(r => Number(r.id) === itemId);
           const locked = await client.query('SELECT quantity,auto_disable,option_id FROM inventory_items WHERE id=$1 FOR UPDATE', [itemId]);
@@ -459,7 +457,12 @@ router.patch('/orders/:id/status', async (req, res, next) => {
         }
     }
     if (status === 'cancelled' && order.status !== 'cancelled') {
-      await releaseOrderInventory(client, order.id);
+      const consumed = await client.query(`SELECT * FROM inventory_movements WHERE order_id=$1 AND movement_type='consumo'`, [order.id]);
+      for (const m of consumed.rows) {
+        await client.query('UPDATE inventory_items SET quantity=quantity+$1,updated_at=NOW() WHERE id=$2', [m.quantity, m.inventory_item_id]);
+        await client.query('UPDATE options o SET active=CASE WHEN i.auto_disable THEN TRUE ELSE o.active END FROM inventory_items i WHERE i.id=$1 AND o.id=i.option_id', [m.inventory_item_id]);
+        await client.query(`INSERT INTO inventory_movements(inventory_item_id,movement_type,quantity,unit_cost,reason,order_id,idempotency_key) VALUES($1,'devolucao',$2,$3,'Devolução por cancelamento',$4,$5) ON CONFLICT(idempotency_key) DO NOTHING`, [m.inventory_item_id, m.quantity, m.unit_cost, order.id, `order-${order.id}-return-${m.inventory_item_id}`]);
+      }
     }
     // Estoque por unidade (trufados): cancelar devolve exatamente o que o pedido tinha reservado.
     if (status === 'cancelled' && order.status !== 'cancelled') {

@@ -24,12 +24,11 @@ test('todo script inline das páginas do site está coberto e sem placeholders q
     }
   }
 });
-test('política: scripts só do site, sem unsafe-inline em script, Preview incorporável e sem object', () => {
+test('política: scripts só do site, sem unsafe-inline em script, sem frames e sem object', () => {
   const csp = buildCsp(["'sha256-abc'"]);
   assert.match(csp, /script-src 'self' 'sha256-abc'(;|$)/);
   assert.doesNotMatch(csp.split('; ').find(d => d.startsWith('script-src')), /unsafe/);
-  assert.doesNotMatch(csp, /frame-ancestors\s+'(?:none|self)'/);
-  for (const d of ["object-src 'none'", "base-uri 'self'", "connect-src 'self'"]) assert.ok(csp.includes(d), d);
+  for (const d of ["object-src 'none'", "frame-ancestors 'none'", "base-uri 'self'", "connect-src 'self'"]) assert.ok(csp.includes(d), d);
 });
 test('CSP_REPORT_ONLY=true troca o cabeçalho para modo de observação', () => {
   const headers = {};
