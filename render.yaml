@@ -3,7 +3,8 @@ services:
     name: acai-da-roca
     runtime: node
     plan: starter
-    buildCommand: npm ci && npm run build
+    rootDir: .
+    buildCommand: npm ci --include=dev && npm run build && npm prune --omit=dev
     startCommand: node src/server.js
     healthCheckPath: /api/health
     envVars:
