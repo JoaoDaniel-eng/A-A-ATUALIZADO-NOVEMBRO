@@ -30,6 +30,8 @@ const APP_SHELL = [
   '/images/acai-doce-tentacao.webp',
   '/images/acai-ninho-dourado.webp',
   '/images/acai-hero-flutuando.webp',
+  '/images/ninho-trufado-chocolate.webp',
+  '/images/logo-acai-da-roca.png',
   '/images/icon-192.png',
   '/images/icon-512.png',
   '/images/icon-maskable-512.png',
