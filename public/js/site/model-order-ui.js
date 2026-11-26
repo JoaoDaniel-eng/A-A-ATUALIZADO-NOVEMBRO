@@ -8,9 +8,11 @@
   const imageFor = product => {
     const source = product?.image_url || (product?.type === 'traditional' ? '/images/acai-tradicional.webp' : '/images/ninho-trufado-chocolate.webp');
     const normalizedName = String(product?.name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLocaleLowerCase('pt-BR');
-    if (product?.type === 'traditional')
-      return '/images/acai-tradicional-cliente.webp';
     const galleryPhotos = [
+      { match: 'acai tradicional', image: '/images/acai-tradicional-cliente.webp' },
+      { match: 'ninho com brigadeiro e nutella', image: '/images/acai-ninho-brigadeiro.webp' },
+      { match: 'brigadeiro e nutella com maracuja', image: '/images/acai-ninho-tropical.webp' },
+      { match: 'brigadeiro com nutella e pacoca', image: '/images/acai-ninho-dourado.webp' },
       { match: 'pistache', image: '/images/sorvete-pistache-copo-card.webp' },
       { match: 'flocos', image: '/images/sorvete-flocos-copo-card.webp' },
       { match: 'ninho trufado', image: '/images/sorvete-ninho-trufado-copo-card.webp' },
@@ -26,6 +28,8 @@
     const galleryPhoto = galleryPhotos.find(item => normalizedName.includes(item.match));
     if (galleryPhoto)
       return galleryPhoto.image;
+    if (product?.type === 'traditional')
+      return '/images/acai-tradicional-cliente.webp';
     try {
       const url = new URL(source, window.location.origin);
       if (normalizedName === 'ninho com chocolate' && url.origin === window.location.origin && ['/images/ninho-trufado-chocolate.webp', '/images/ninho-trufado-chocolate-640.webp'].includes(url.pathname))
