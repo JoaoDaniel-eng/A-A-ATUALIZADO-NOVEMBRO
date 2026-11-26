@@ -1,6 +1,6 @@
 # Açaí da Roça — pedidos online e painel administrativo
 
-Aplicação full-stack para uma loja de açaí, com frontend em React + TypeScript + Vite, backend Node.js + Express 5 e banco PostgreSQL. O cliente monta o açaí, informa a entrega, registra o pedido no banco e recebe um resumo pré-preenchido no WhatsApp para enviar manualmente. Não há pagamento online com provedor; para Pix, a loja pode cadastrar a chave no painel (Funcionamento) e o cliente recebe o valor e o código “Pix copia e cola” depois do pedido. Pedidos têm limite anti-spam (20 por IP e 6 por telefone a cada hora).
+Aplicação full-stack para uma loja de açaí, com frontend em HTML/CSS/JavaScript puro, backend Node.js + Express 5 e banco PostgreSQL. O cliente monta o açaí, informa a entrega, registra o pedido no banco e recebe um resumo pré-preenchido no WhatsApp para enviar manualmente. Não há pagamento online com provedor; para Pix, a loja pode cadastrar a chave no painel (Funcionamento) e o cliente recebe o valor e o código “Pix copia e cola” depois do pedido. Pedidos têm limite anti-spam (20 por IP e 6 por telefone a cada hora).
 
 ## Requisitos
 - Node.js 20 ou superior
@@ -12,7 +12,7 @@ Aplicação full-stack para uma loja de açaí, com frontend em React + TypeScri
 2. Crie um arquivo local chamado `.env` na pasta principal e preencha `NODE_ENV`, `PORT`, `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `DEV_EMAIL`, `DEV_PASSWORD` e `WHATSAPP_NUMBER`. Copie o `.env.example` (só nomes de variáveis, sem valores) para `.env` e preencha; mantenha o `.env` fora do ZIP e do repositório.
 3. Na pasta do projeto, execute `npm install`.
 4. Execute `npm start` (ou `npm run dev` durante o desenvolvimento).
-5. O comando `npm start` compila a interface React e inicia o servidor. Abra `http://localhost:3000`. O painel da loja fica em `http://localhost:3000/admin` e o painel do desenvolvedor em `http://localhost:3000/dev`.
+5. Abra `http://localhost:3000`. O painel da loja fica em `http://localhost:3000/admin` e o painel do desenvolvedor em `http://localhost:3000/dev`.
 6. Rode os testes com `npm test`.
 
 O schema e os dados iniciais são criados de forma idempotente quando o servidor inicia e `DATABASE_URL` está configurada. O usuário administrativo inicial é criado se `ADMIN_EMAIL` e `ADMIN_PASSWORD` estiverem definidos antes da primeira inicialização. Se já existir um administrador com o mesmo e-mail, a senha não é sobrescrita automaticamente.
@@ -24,10 +24,6 @@ O schema e os dados iniciais são criados de forma idempotente quando o servidor
 4. Cadastre as variáveis `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `DEV_EMAIL`, `DEV_PASSWORD` e `WHATSAPP_NUMBER` no painel do Render. Não envie `.env` ao repositório.
 5. Faça o deploy e confira `/api/health`. Para monitorar também o banco (ex.: UptimeRobot), use `/api/health/db`; não o configure como health check do Render, porque o Neon suspende o banco quando ocioso e a primeira consulta pode demorar.
 6. Configure o domínio personalizado nas configurações do serviço e siga as instruções de DNS fornecidas pelo Render. Para domínio `.com.br`, o registro e a renovação são feitos pelo registrador escolhido.
-
-## Interface do cardápio
-
-A vitrine pública usa o sistema visual de cardápio da versão personalizada: categorias, cards de produtos, seleção de tamanhos e adicionais, montagem do pedido, sacola, cupons, checkout, conta do cliente e integração com o backend. O painel administrativo, o painel do desenvolvedor, pedidos rápidos e APIs continuam usando a estrutura do projeto main.
 
 ## Funcionalidades
 - Cardápio e preços carregados do PostgreSQL.

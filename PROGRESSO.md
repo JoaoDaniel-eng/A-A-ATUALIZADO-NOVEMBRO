@@ -322,3 +322,10 @@
 
 ### "Quero esse" da galeria (08/11/2026)
 - O botão "Quero esse" só leva ao cardápio. Ele não anota mais "Sabor escolhido" nas observações nem mostra aviso no montador. O sabor só entra no pedido quando a cliente escolhe o trufado no cardápio.
+
+## Revisão de qualidade — cardápio, sacola e checkout (26/11/2026)
+A camada `public/css/theme-polish.css` unifica superfícies e estados do cardápio/checkout nos temas claro e escuro; foi vinculada a `index.html` e `conta.html`. O checkout agora preserva o horário agendado, persiste alterações da sacola, restaura contador após recarga, invalida cupom quando o carrinho muda, limita quantidade por linha a 20 e limpa/fecha a interface após sucesso. Os listeners dos módulos legados de checkout, acompanhamento, favoritos e atualização ao vivo agora toleram páginas sem seus controles.
+
+As rotas públicas de edição/cancelamento exigem telefone válido (10–15 dígitos normalizados) e recusam pedidos rápidos. A revisão estática ainda identificou risco de concorrência no estoque de ingredientes: a correção foi deixada pendente porque exige desenho transacional consistente com as reservas e validação em PostgreSQL.
+
+Validação local: Playwright/Chromium com APIs simuladas aprovou 7 verificações: cores de superfícies no escuro desktop e claro móvel, persistência e contador da sacola após recarga, `scheduledFor` no payload e fechamento/limpeza após resposta simulada de sucesso, sem erros não tratados no console. **Não houve conexão com PostgreSQL real**; pedidos e catálogo do navegador foram simulados. Ver `docs/quality-pass-2026-11-26.md` para escopo e detalhes. Antes de produção, validar as rotas e o ciclo de estoque em ambiente com PostgreSQL de teste/homologação.

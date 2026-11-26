@@ -53,7 +53,7 @@ export function createApp() {
   let indexHtml = null;
   const sendIndex = async (req, res, next) => {
     try {
-      indexHtml ??= await readFile(path.join(__dirname, '..', 'dist', 'index.html'), 'utf8');
+      indexHtml ??= await readFile(path.join(__dirname, '..', 'public', 'index.html'), 'utf8');
       res.type('html').set('Cache-Control', 'no-cache').send(stampVersions(indexHtml.replaceAll('__SITE_URL__', siteUrl(req)).replaceAll('__BUILD_ID__', BUILD_ID)));
     }
     catch (err) {
@@ -103,7 +103,6 @@ export function createApp() {
       next(err);
     }
   });
-  app.use(express.static(path.join(__dirname, '..', 'dist')));
   app.use(express.static(path.join(__dirname, '..', 'public')));
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', app: 'Açaí da Roça' }));
   // Checa o banco com um SELECT 1 e limite de 5 s. Fica separado do /api/health de propósito: o Neon suspende o banco

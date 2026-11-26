@@ -1,57 +1,64 @@
-# Plano — Açaí da Roça: montador e carrinho
+# Sacola e finalização em etapas — Plano de Implementação
 
-## Escopo proposto para esta entrega
+> **Para quem implementar:** execute as etapas abaixo na ordem, preservando a estrutura e os contratos atuais do projeto.
 
-Criar a experiência de compra da loja voltada ao fluxo pedido: explorar categorias, personalizar cada produto, adicionar vários itens ao pedido, revisar/editar o carrinho e só então avançar por etapas de identificação, entrega e pagamento. O projeto original em ZIP mencionado no anexo não foi recebido. Portanto, esta entrega não pode reconstruir ou validar regras existentes, nem alegar que inclui o sistema completo descrito no anexo (backend Node/Express, Neon, autenticação, painéis, estoque real, notificações, pagamentos ou publicação no Render). O catálogo e preços de exemplo serão identificados como conteúdo demonstrativo; o armazenamento local servirá apenas para preservar o carrinho neste navegador, não como banco de dados.
+**Objetivo:** permitir que o cliente adicione vários produtos a uma sacola, revise os itens e escolha entre continuar comprando ou seguir para finalizar o pedido.
 
-## Abordagem
+**Arquitetura:** estender o fluxo público existente, sem reescrever o carrinho ou o checkout. A navegação passa a distinguir a revisão da sacola da etapa atual de entrega e pagamento; o resumo e o formulário já existentes continuam usando o cálculo local, a validação e o endpoint atuais.
 
-- Site responsivo mobile-first em React + TypeScript + Vite, executado no runtime gerenciado do WebDev.
-- Catálogo demonstrativo dividido em Açaí para montar, Trufados e Sorvetes, com tamanhos, preços-base, opções gratuitas, caldas e adicionais pagos selecionáveis. O preço do produto muda imediatamente conforme tamanho, adicionais e quantidade.
-- Montador em etapas/cards, com limites visíveis para acompanhamentos gratuitos, opções selecionadas destacadas, observações e validação antes de adicionar.
-- Carrinho fixo no rodapé, com respeito ao `safe-area-inset-bottom` e espaço extra no conteúdo rolável; sempre permite continuar explorando o cardápio.
-- Botão de adicionar apenas insere a configuração no carrinho, mostra confirmação e limpa o montador sem iniciar checkout.
-- Painel de carrinho com itens personalizados, alteração de quantidade, edição que reabre o montador, remoção, subtotal, campo de cupom com regras demonstrativas, taxa de entrega demonstrativa e total.
-- Avanço posterior por interface de checkout em etapas (identificação, entrega/retirada, horário e pagamento), sem capturar dados financeiros reais nem registrar pedidos em servidor nesta etapa.
-- Persistência de itens, quantidades e cupom no `localStorage`, por ser preferência/dado temporário do carrinho e permitir sobreviver a atualização da página. Não serão armazenadas informações sensíveis.
-- Estados vazios, feedback visual, acessibilidade de teclado/labels, áreas de toque confortáveis e respeito a `prefers-reduced-motion`.
-- Os dados demonstrativos serão isolados em módulos próprios para facilitar integração posterior com catálogo e APIs reais.
+**Stack:** HTML, CSS e JavaScript puro no frontend; Node.js/Express permanece inalterado.
 
-## Estrutura principal prevista
+**Especificação:** pedido da usuária nesta conversa: “um com sistema de sacola, onde o cliente vai adicionando os produtos e quando terminar de escolher, ele poder ir em finalizar pedido”.
 
-- `src/main.tsx` — inicialização React.
-- `src/App.tsx` — composição da loja, navegação por categoria, montador, carrinho e etapas de checkout.
-- `src/data/catalog.ts` — produtos e opções demonstrativas tipadas.
-- `src/components/` — cabeçalho, navegação de categorias, cards de produto, montador, barra sticky e painel/modal do carrinho.
-- `src/hooks/` — estado do pedido, cálculo de preços e persistência do carrinho.
-- `src/styles/` — tokens de marca, layout responsivo e estilos de componentes.
-- `public/manus-routes.json` — manifesto de rotas do site.
+## Restrições globais
 
-## Direção visual
+- Adicionar produtos à sacola sem enviar o pedido; o cliente decide quando seguir para a finalização.
+- Preservar totalização e descontos, taxa de entrega/retirada, estoque, cupons, persistência local, campos e validação do checkout, criação do pedido e abertura do WhatsApp.
+- Preservar rotas, APIs, marca, conteúdo, temas, acessibilidade e seletores consumidos por outros scripts; não alterar painel administrativo nem backend.
+- Manter o projeto sem novas dependências.
 
-Três direções candidatas (probabilidades baixas, alternativas de exploração): “Botânica tropical editorial” (0,04), “Balcão urbano noturno” (0,03), “Mercado artesanal solar” (0,02). Escolhida: **Botânica tropical editorial**.
+## Pontos de atenção
 
-- **Movimento de design:** editorial gastronômico tropical, com composição assimétrica inspirada em rótulos artesanais contemporâneos, sem aparência de template.
-- **Princípios:** produto em primeiro plano; decisões e preços sempre explícitos; hierarquia visual quente e arejada; interações rápidas e reversíveis.
-- **Filosofia de cores:** creme de polpa como superfície acolhedora, roxo-açaí profundo como assinatura e verde folha como cor de ação positiva; tons suaves de lavanda apoiam seleções sem competir com fotos.
-- **Paradigma de layout:** faixa editorial assimétrica de destaque e navegação por categorias em trilho horizontal; conteúdo de compra em coluna no celular e composição lateralizada em telas amplas; carrinho persistente junto à borda inferior.
-- **Elementos de assinatura:** selo circular inspirado em fruta/colheita; pequenas linhas orgânicas de folha como acento; etiquetas “grátis” e “+R$” sempre contrastantes.
-- **Filosofia de interação:** seleção com estado visual inequívoco; preço acompanha cada escolha; adicionar não interrompe a compra; carrinho é sempre acessível e editável.
-- **Animação:** transições curtas de 160–220 ms para seleção e painéis, sem deslocamentos chamativos; respeitar movimento reduzido.
-- **Tipografia:** sans-serif contemporânea e legível com título expressivo de personalidade editorial; tamanhos e pesos com contraste claro entre títulos, preço, instruções e metadados.
-- **Essência da marca:** “Açaí feito do seu jeito, sem interromper a vontade de escolher” — acolhedora, caprichosa, direta.
-- **Voz da marca:** convidativa e objetiva. Exemplos: “Seu copo, suas combinações.” e “Pode continuar escolhendo — seu pedido fica guardado.”
-- **Wordmark/conceito de logo:** nome “Açaí da Roça” acompanhado de um selo-fruta simples desenhado com formas de caroço e folha, aplicado como assinatura visual.
-- **Cor de assinatura:** roxo profundo de açaí.
+- Sacola vazia: impedir avanço para finalizar e manter um caminho claro de volta ao cardápio.
+- Persistência e recarga: os itens recuperados devem aparecer na etapa de sacola com a contagem e os valores atualizados.
+- Categorias de açaí tradicional, trufados e sorvetes: todas devem conseguir abrir a sacola após adicionar itens.
+- Remoção de item, desconto, frete e total: continuar sincronizados com as regras atuais; não duplicar IDs nem criar uma segunda fonte de preço.
+- Checkout: campos obrigatórios ocultos na etapa de revisão não podem disparar o envio; somente “Fazer pedido” na etapa de finalização envia o formulário.
 
-## Construção e entrega
+## Estrutura e responsabilidades do projeto
 
-1. Após aprovação deste escopo, registrar outcomes em `TODO.md`, configurar diagnósticos e criar a interface e lógica do carrinho.
-2. Se necessário, produzir uma imagem hero personalizada e aplicar ativos apenas em locais definidos.
-3. Registrar o manifesto de rotas antes de iniciar o servidor, declarar o comando de desenvolvimento pelo runtime WebDev e verificar que a prévia responde.
-4. Executar verificações disponíveis (diagnósticos e build) e corrigir falhas encontradas.
-5. Salvar o resultado no fluxo de checkpoint exigido pelo projeto. Publicação não será presumida.
+- `public/index.html`: estrutura da página pública, indicadores das etapas, resumo do pedido e formulário existente.
+- `public/js/site/builder-steps.js`: estado e navegação entre seleção, sacola e checkout; atalhos de cabeçalho/barra móvel e caminhos de retorno.
+- `public/js/site/core.js`: renderização existente de itens, contagem, descontos e totais; preservar como fonte visual dos valores.
+- `public/js/site/checkout.js`: adicionar/remover itens, validar e enviar pedidos; preservar comportamento e contrato do servidor.
+- `public/js/site/cart-storage.js`: persistência local existente da sacola; sem mudança no formato salvo.
+- `public/css/styles.css` e `public/css/experience.css`: estados responsivos e acabamento visual coerente com o design atual.
+- `public/service-worker.js`: versão do cache e lista de ativos, atualizadas para servir os arquivos novos.
 
-## Decisão pendente
+## Design
 
-Aprovar este primeiro escopo focado na experiência da loja/carrinho, ou enviar o ZIP original e indicar que a prioridade é reconstruir a plataforma integrada completa descrita no anexo. Sem o ZIP, não há base para preservar comportamento original; sem backend configurado e integrações, a interface de checkout não confirmará pedidos nem processará pagamentos reais.
+**Leitura do pedido:** fluxo de pedidos online para clientes da loja, com prioridade ao uso no celular; extensão da interface pública existente, não um redesign.
+
+**Direção existente:** editorial gastronômico brasileiro, acolhedor e centrado nos produtos, conforme `brand-spec.md`. Preservar a assinatura roxo-açaí `#2A1034`, roxo `#55266B`, verde-folha `#A7CF55`, fundos creme/papel, tipografias Sora e DM Sans, cartões arredondados e transições discretas.
+
+**Calibração:** variação visual e movimento acompanham a interface atual; densidade suficiente para revisar itens e total sem sobrecarregar; nenhuma imagem nova necessária; fidelidade de marca 10/10.
+
+**Princípios:** (1) deixar explícito em que momento a pessoa está — escolhendo, revisando ou finalizando; (2) manter sacola, quantidade e total fáceis de encontrar; (3) dar ações diretas para voltar ao cardápio ou prosseguir; (4) tornar os controles confortáveis no celular e compreensíveis por teclado/leitor de tela.
+
+**Interação:** após adicionar um produto, continuar no cardápio; o atalho da sacola mostra a quantidade e o total e abre a revisão. A revisão oferece “Continuar escolhendo” e “Finalizar pedido”. A etapa de finalização mostra os dados de entrega/retirada e pagamento já existentes; apenas o botão de envio atual registra o pedido.
+
+## Implementação
+
+### Etapa 1 — Sacola e finalização separadas
+
+**Arquivos:** modificar `public/index.html`, `public/js/site/builder-steps.js`, `public/css/styles.css`, `public/css/experience.css` e `public/service-worker.js`.
+
+- Introduzir uma etapa clara de “Sacola” antes do checkout, separada de “Entrega e pagamento”, com navegação coerente no desktop e no celular.
+- Na sacola, reutilizar o resumo atual de itens e valores, oferecer retorno ao cardápio e botão “Finalizar pedido”. Na finalização, reutilizar o formulário existente e manter o resumo visível.
+- Fazer os atalhos existentes de contagem/barra móvel abrirem a sacola, não pularem diretamente para os campos de checkout. Após adicionar itens, manter o cliente no cardápio.
+- Preservar o comportamento para açaí tradicional, trufados e sorvetes, além de recuperação da sacola salva e estados vazios.
+- Atualizar as referências de versão/cache para que a página e o PWA recebam os novos arquivos.
+
+## Execução
+
+Implementar nesta sessão, pois as mudanças são coesas e dependem do estado de navegação já existente. Depois de aprovada a direção, registrar os resultados em `TODO.md` antes de alterar o código, conforme o fluxo do projeto.
