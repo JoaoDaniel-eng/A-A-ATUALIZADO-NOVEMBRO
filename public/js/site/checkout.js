@@ -365,17 +365,17 @@ function addCurrentToOrder() {
   document.dispatchEvent(new CustomEvent('acai:item-added'));
   return true;
 }
-$('#add-to-order').addEventListener('click', () => {
+$('#add-to-order')?.addEventListener('click', () => {
   if (!addCurrentToOrder()) builderMessage(needSizeMessage());
 });
 // Botão "Ir para o pedido" do montador (só aparece sozinho se a tela de passos não carregar).
-$('#view-order').addEventListener('click', () => {
+$('#view-order')?.addEventListener('click', () => {
   commitPendingDraft();
   if (!cart.length) { builderMessage(needSizeMessage()); return; }
   builderMessage('');
   scrollRespectingMotion($('#pedido'), { behavior: 'smooth', block: 'start' });
 });
-$('#zone-select').addEventListener('change', renderCart);
+$('#zone-select')?.addEventListener('change', renderCart);
 // Entrega x retirada: na retirada some endereço e bairro (não são obrigatórios) e o frete é zero.
 function syncFulfillment() {
   const pickup = isPickup();
@@ -388,14 +388,14 @@ function syncFulfillment() {
   $('#order-time-label').textContent = pickup ? 'Quando deseja retirar?' : 'Quando deseja receber?';
   renderCart();
 }
-$('#fulfillment').addEventListener('change', syncFulfillment);
+$('#fulfillment')?.addEventListener('change', syncFulfillment);
 // Colheres: botões − / + e campo numérico (de 0 até store.maxSpoons), R$ 0,10 cada.
 const setSpoons = n => { $('#spoon-quantity').value = String(Math.min(maxSpoons(), Math.max(0, n))); renderCart(); };
-$('#spoon-minus').addEventListener('click', () => setSpoons(spoonCount() - 1));
-$('#spoon-plus').addEventListener('click', () => setSpoons(spoonCount() + 1));
-$('#spoon-quantity').addEventListener('input', renderCart);
-$('#spoon-quantity').addEventListener('change', () => setSpoons(spoonCount()));
-$('#payment-method').addEventListener('change', e => {
+$('#spoon-minus')?.addEventListener('click', () => setSpoons(spoonCount() - 1));
+$('#spoon-plus')?.addEventListener('click', () => setSpoons(spoonCount() + 1));
+$('#spoon-quantity')?.addEventListener('input', renderCart);
+$('#spoon-quantity')?.addEventListener('change', () => setSpoons(spoonCount()));
+$('#payment-method')?.addEventListener('change', e => {
   const cash = e.target.value === 'Dinheiro';
   $('#cash-change-fields').classList.toggle('hidden', !cash);
   $('#needs-change').required = cash;
@@ -406,7 +406,7 @@ $('#payment-method').addEventListener('change', e => {
     $('#change-for').required = false;
   }
 });
-$('#needs-change').addEventListener('change', e => {
+$('#needs-change')?.addEventListener('change', e => {
   const needs = e.target.value === 'yes';
   $('#change-for-label').classList.toggle('hidden', !needs);
   $('#change-for').required = needs;
@@ -446,9 +446,9 @@ async function loadScheduleSlots() {
     hint.textContent = 'Não foi possível carregar os horários. Verifique a conexão e tente novamente.';
   }
 }
-$('#schedule-day').addEventListener('change', paintScheduleTimes);
-$('#schedule-time').addEventListener('change', () => { $('#scheduled-for').value = $('#schedule-time').value || ''; });
-$('#order-time').addEventListener('change', e => {
+$('#schedule-day')?.addEventListener('change', paintScheduleTimes);
+$('#schedule-time')?.addEventListener('change', () => { $('#scheduled-for').value = $('#schedule-time').value || ''; });
+$('#order-time')?.addEventListener('change', e => {
   const scheduled = e.target.value === 'scheduled';
   $('#schedule-label').classList.toggle('hidden', !scheduled);
   if (scheduled)
@@ -456,7 +456,7 @@ $('#order-time').addEventListener('change', e => {
   else
     $('#scheduled-for').value = '';
 });
-$('#apply-coupon').addEventListener('click', async () => {
+$('#apply-coupon')?.addEventListener('click', async () => {
   const code = $('#coupon-code').value.trim().toUpperCase(), msg = $('#coupon-message'), subtotal = cart.reduce((sum, i) => sum + i.lineTotalCents, 0), itemCount = cart.reduce((sum, i) => sum + i.quantity, 0);
   msg.textContent = '';
   if (!code) {
@@ -482,7 +482,7 @@ $('#apply-coupon').addEventListener('click', async () => {
     msg.classList.add('error-message');
   }
 });
-$('#coupon-code').addEventListener('input', () => { appliedCoupon = null; $('#coupon-message').textContent = ''; renderCart(); });
+$('#coupon-code')?.addEventListener('input', () => { appliedCoupon = null; $('#coupon-message').textContent = ''; renderCart(); });
 // Aviso em vermelho com tudo o que o cliente esqueceu de preencher no pedido.
 let checkoutAttempted = false;
 function checkoutProblems() {
@@ -549,9 +549,9 @@ function showCheckoutProblems(scrollToBox) {
   return problems;
 }
 // Depois da primeira tentativa, a lista acompanha o cliente: some item por item conforme ele preenche.
-$('#checkout-form').addEventListener('input', () => { if (checkoutAttempted) showCheckoutProblems(false); });
-$('#checkout-form').addEventListener('change', () => { if (checkoutAttempted) showCheckoutProblems(false); });
-$('#checkout-form').addEventListener('submit', async (e) => {
+$('#checkout-form')?.addEventListener('input', () => { if (checkoutAttempted) showCheckoutProblems(false); });
+$('#checkout-form')?.addEventListener('change', () => { if (checkoutAttempted) showCheckoutProblems(false); });
+$('#checkout-form')?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = e.currentTarget;
   const msg = $('#checkout-message');

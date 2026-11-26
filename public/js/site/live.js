@@ -55,8 +55,8 @@ async function refreshTracked() {
   }
   catch { }
 }
-$('#tracking-result').addEventListener('input', () => { trackDirty = true; });
-$('#tracking-result').addEventListener('change', () => { trackDirty = true; });
+$('#tracking-result')?.addEventListener('input', () => { trackDirty = true; });
+$('#tracking-result')?.addEventListener('change', () => { trackDirty = true; });
 function loadCustomerOrdersIfSignedIn() {
   if (localStorage.getItem('acaiCustomerToken')) {
     loadCustomerOrders();

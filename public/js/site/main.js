@@ -7,7 +7,7 @@ else {
   applyAuthUI(null);
 }
 $('#year').textContent = new Date().getFullYear();
-load();
+initModelOrderUI();
 applyTheme(currentThemePref(), false);
 applyFontScale(currentFontScale(), false);
 

@@ -701,8 +701,10 @@ html[data-theme="dark"] .dev-counts b{color:#e2c6f5}
 .schedule-picker .schedule-hint{grid-column:1/-1;margin:0;font-size:.82rem}
 @media(max-width:480px){.schedule-picker{grid-template-columns:1fr}}
 
-/* Foto do copo flutuando no topo (fundo transparente, funciona nos temas claro e escuro). */
-.hero-photo{position:relative;height:100%;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 22px 26px rgba(43,10,61,.28));animation:heroFloat 5s ease-in-out infinite}
+/* Foto do copo em tamanho controlado para não dominar o hero. */
+.hero-photo{display:block;position:relative;height:min(260px,100%);width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 18px 22px rgba(43,10,61,.24));animation:heroFloat 5s ease-in-out infinite}
+/* Sem a foto, o círculo de fundo também não deve ficar solto no hero. */
+.hero-art .sun{display:none}
 @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @media(prefers-reduced-motion:reduce){.hero-photo{animation:none}}
 
@@ -926,7 +928,9 @@ html[data-theme="dark"] .stock-badge-out{background:#2d2038;color:#c9bad3;border
   .hero h1 { font-size: clamp(1.9rem, 9vw, 2.4rem); margin: 8px 0 10px; }
   .hero-copy > p { font-size: .9rem; margin-bottom: 12px; }
   .hero-note { margin-top: 10px !important; }
-  .hero-art { height: 170px; width: min(100%, 220px); }
+  /* No celular, o copo volta menor para não dominar o início da página. */
+  .hero-art { height: 150px; width: min(100%, 220px); }
+  .hero-photo { height: 150px; }
   .sun { width: 170px; height: 170px; }
 
   /* Faixa do desconto: só título e botão */
@@ -1008,7 +1012,7 @@ html[data-theme="dark"] .field-invalid{border-color:#ef5350!important;background
 #builder.is-stepped #view-order { display: none; }
 .builder-sr { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .builder-steps { margin: 0 0 4px; }
-.builder-steps ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.builder-steps ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .builder-steps button { width: 100%; min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; padding: 8px 4px; border: 0; border-radius: 12px; background: none; color: var(--muted); font: inherit; cursor: pointer; }
 .builder-steps button:focus-visible { outline: 3px solid var(--purple2); outline-offset: 2px; }
 .step-num { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #efe6f4; color: var(--purple2); font-weight: 800; font-size: .85rem; }
@@ -1098,3 +1102,34 @@ html[data-theme="dark"] .push-invite .button-outline{background:transparent;colo
 .push-invite-float{position:fixed;left:12px;right:12px;bottom:calc(5.5rem + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:420px;z-index:70;box-shadow:0 10px 30px rgba(43,10,61,.35);animation:push-invite-in .35s ease-out}
 @keyframes push-invite-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.push-invite-float{animation:none}}
+
+/* A home concentra descoberta e compra; conta fica em página própria. */
+.home-page .loyalty-promo,
+.home-page .account-section { display: none !important; }
+.account-page main > section:not(.account-section) { display: none !important; }
+.account-page .account-section { display: block; max-width: 980px; margin: 0 auto; padding-top: 48px; }
+.account-page .account-back-link { display: inline-flex; margin-bottom: 24px; }
+.account-page .site-header nav > a:not(.header-account-btn),
+.account-page .site-header nav > .header-account-btn,
+.account-page .site-header nav > .install-app { display: none; }
+
+/* Contraste reforçado: evita que textos auxiliares pareçam transparentes. */
+.muted,
+.section-heading p,
+.checkout-note,
+.review-photo-help,
+.review-photo-title em { color: #62556a; }
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .section-heading p,
+html[data-theme="dark"] .checkout-note,
+html[data-theme="dark"] .review-photo-help,
+html[data-theme="dark"] .review-photo-title em { color: #d8cbe0; }
+
+/* Títulos mais profundos no modo claro, sem perder a identidade roxa. */
+html:not([data-theme="dark"]) .hero h1,
+html:not([data-theme="dark"]) .section-heading h2,
+html:not([data-theme="dark"]) .form-card h3,
+html:not([data-theme="dark"]) .cart-card h3,
+html:not([data-theme="dark"]) .review-form h3,
+html:not([data-theme="dark"]) .acai-gallery-caption h3 { color: #22092f; }
+html:not([data-theme="dark"]) .hero h1 span { color: #4a1266; }

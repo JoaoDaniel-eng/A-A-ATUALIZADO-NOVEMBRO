@@ -1,9 +1,9 @@
-const CACHE_NAME = 'acai-da-roca-v20261124-redesign7';
+const CACHE_NAME = 'acai-da-roca-v20261125-sacola1';
 const APP_SHELL = [
   '/',
   '/index.html',
-  '/css/styles.css?v=20261124-acai-redesign2',
-  '/css/experience.css?v=20261124-acai-redesign4',
+  '/css/styles.css?v=20261125-sacola1',
+  '/css/experience.css?v=20261125-sacola1',
   '/css/original-colors.css?v=20261124-original-colors1',
   '/js/diagnostics.js?v=20261105-ignora-externos',
   '/js/site/core.js?v=20261124-acai-redesign2',
@@ -22,7 +22,7 @@ const APP_SHELL = [
   '/js/site/forgot-password.js?v=20261124-acai-redesign2',
   '/js/site/live.js?v=20261124-acai-redesign2',
   '/js/site/store-banner.js?v=20261124-acai-redesign2',
-  '/js/site/builder-steps.js?v=20261124-acai-redesign2',
+  '/js/site/builder-steps.js?v=20261125-sacola1',
   '/js/site/main.js?v=20261124-acai-redesign2',
   '/manifest.webmanifest',
   '/images/acai-morango-proibido.webp',

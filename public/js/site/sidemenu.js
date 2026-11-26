@@ -61,9 +61,9 @@ sideMenu.addEventListener('click', e => {
   else if (a === 'logout')
     doLogout();
   else if (a === 'login')
-    goTo('#customer-login-form', '#customer-login-form [name=phone]');
+    window.location.href = '/conta.html#customer-login-form';
   else if (a === 'register')
-    goTo('#customer-register-form', '#customer-register-form [name=name]');
+    window.location.href = '/conta.html#customer-register-form';
   else if (a === 'track')
     goTo('#acompanhar');
 });

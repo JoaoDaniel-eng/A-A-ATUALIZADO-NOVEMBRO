@@ -54,7 +54,7 @@ document.addEventListener('click', async (e) => {
     }
   }
 });
-$('#favorite-open').addEventListener('click', () => {
+$('#favorite-open')?.addEventListener('click', () => {
   const m = $('#favorite-builder-message');
   m.textContent = '';
   if (!selectedSize) {
@@ -66,8 +66,8 @@ $('#favorite-open').addEventListener('click', () => {
   $('#favorite-name').focus();
 });
 function closeFavoriteRow() { $('#favorite-save-row').classList.add('hidden'); $('#favorite-open').classList.remove('hidden'); $('#favorite-name').value = ''; }
-$('#favorite-cancel').addEventListener('click', closeFavoriteRow);
-$('#favorite-save').addEventListener('click', async () => {
+$('#favorite-cancel')?.addEventListener('click', closeFavoriteRow);
+$('#favorite-save')?.addEventListener('click', async () => {
   const m = $('#favorite-builder-message'), name = $('#favorite-name').value.trim();
   m.textContent = '';
   if (name.length < 2) {
@@ -86,7 +86,7 @@ $('#favorite-save').addEventListener('click', async () => {
     m.textContent = err.message;
   }
 });
-$('#favorite-name').addEventListener('keydown', e => {
+$('#favorite-name')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     e.preventDefault();
     $('#favorite-save').click();
