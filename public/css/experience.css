@@ -575,3 +575,119 @@ body[data-acai-redesign] .menu-section .section-heading h2:before{content:none}
 body[data-acai-redesign] .catalog-product-photo{display:block!important;width:100%!important;height:220px!important;max-height:220px!important;overflow:hidden!important;isolation:isolate}
 body[data-acai-redesign] .catalog-product-photo img{display:block!important;width:100%!important;height:220px!important;max-width:100%!important;max-height:220px!important;min-width:0!important;min-height:0!important;object-fit:cover!important;object-position:center 52%!important}
 @media(max-width:560px){body[data-acai-redesign] .catalog-product-photo,body[data-acai-redesign] .catalog-product-photo img{height:155px!important;max-height:155px!important}}
+
+
+/* Aviso de funcionamento em destaque: status, explicação e ação em hierarquia clara. */
+body[data-acai-redesign] .store-banner {
+  width: min(calc(100% - 32px), 1180px);
+  min-height: 96px;
+  margin: 14px auto 0;
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  justify-content: initial;
+  gap: 18px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(42, 16, 52, .08);
+  text-align: left;
+  font-size: .96rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+body[data-acai-redesign] .store-banner.is-open {
+  background: #f0f6e8;
+  border-color: #cfe0b7;
+  color: #30451f;
+}
+body[data-acai-redesign] .store-banner.is-closed {
+  background: #f7f1f9;
+  border-color: #dfd0e8;
+  color: #432b50;
+}
+body[data-acai-redesign] .store-banner-indicator {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  justify-self: center;
+}
+body[data-acai-redesign] .store-banner.is-open .store-banner-indicator {
+  background: #55802e;
+  box-shadow: 0 0 0 5px rgba(85, 128, 46, .15);
+}
+body[data-acai-redesign] .store-banner.is-closed .store-banner-indicator {
+  background: #76528b;
+  box-shadow: 0 0 0 5px rgba(118, 82, 139, .14);
+}
+body[data-acai-redesign] .store-banner-copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+body[data-acai-redesign] .store-banner-title {
+  font: 700 1.18rem/1.25 'Sora', sans-serif;
+  letter-spacing: -.02em;
+}
+body[data-acai-redesign] .store-banner-text {
+  font-size: .96rem;
+  line-height: 1.5;
+}
+body[data-acai-redesign] .store-banner-btn {
+  min-height: 46px;
+  padding: 11px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #542f66;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+body[data-acai-redesign] .store-banner-btn:hover { filter: brightness(1.08); }
+body[data-acai-redesign] .store-banner-btn:focus-visible {
+  outline: 3px solid #a7cf55;
+  outline-offset: 3px;
+}
+html[data-theme="dark"] body[data-acai-redesign] .store-banner.is-open {
+  background: #23311d;
+  border-color: #465d39;
+  color: #e0efcf;
+}
+html[data-theme="dark"] body[data-acai-redesign] .store-banner.is-closed {
+  background: #34243d;
+  border-color: #644b70;
+  color: #f0e5f5;
+}
+html[data-theme="dark"] body[data-acai-redesign] .store-banner-btn { background: #74428b; }
+@media (max-width: 620px) {
+  body[data-acai-redesign] .store-banner {
+    width: calc(100% - 24px);
+    min-height: 0;
+    margin-top: 10px;
+    padding: 18px 16px;
+    grid-template-columns: 14px minmax(0, 1fr);
+    gap: 12px 14px;
+    font-size: .93rem;
+  }
+  body[data-acai-redesign] .store-banner-indicator {
+    width: 12px;
+    height: 12px;
+    margin-top: 5px;
+  }
+  body[data-acai-redesign] .store-banner-title { font-size: 1.08rem; }
+  body[data-acai-redesign] .store-banner-text { font-size: .91rem; }
+  body[data-acai-redesign] .store-banner-btn {
+    grid-column: 2;
+    width: 100%;
+    min-height: 46px;
+    white-space: normal;
+  }
+}
+@media (max-width: 360px) {
+  body[data-acai-redesign] .store-banner {
+    width: calc(100% - 20px);
+    padding: 16px 14px;
+  }
+}
