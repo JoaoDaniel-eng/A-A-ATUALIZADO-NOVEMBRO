@@ -691,3 +691,9 @@ html[data-theme="dark"] body[data-acai-redesign] .store-banner-btn { background:
     padding: 16px 14px;
   }
 }
+/* Hero cutout: keep only the floating product, without the decorative backdrop. */
+body[data-acai-redesign] .hero-art::before,
+body[data-acai-redesign] .hero-art::after {
+  content: none;
+  display: none;
+}

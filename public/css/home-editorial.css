@@ -1,0 +1,256 @@
+/* A home deve parecer a loja, não um kit de componentes. */
+body.home-page[data-acai-redesign] .hero {
+  min-height: 540px;
+  padding-top: 46px;
+  padding-bottom: 46px;
+  border-radius: 0;
+  box-shadow: none;
+  background: #fff7e8 !important;
+  color: #291e2f;
+}
+
+body.home-page[data-acai-redesign] .hero::before,
+body.home-page[data-acai-redesign] .hero::after {
+  content: none;
+  display: none;
+}
+
+body.home-page[data-acai-redesign] .hero-copy .eyebrow,
+body.home-page[data-acai-redesign] .hero-stamp {
+  display: none;
+}
+
+body.home-page[data-acai-redesign] .hero h1 {
+  max-width: 11ch;
+  margin: 0 0 18px;
+  color: #2a1034 !important;
+  font-family: "Sora", sans-serif;
+  font-size: clamp(3.2rem, 5.5vw, 5.25rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 1.04;
+}
+
+body.home-page[data-acai-redesign] .hero-copy > p:not(.hero-note) {
+  max-width: 430px;
+  margin: 0;
+  color: #625966 !important;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+body.home-page[data-acai-redesign] .hero-art {
+  height: 430px;
+}
+
+body.home-page[data-acai-redesign] .hero-photo {
+  height: min(420px, 100%);
+  filter: drop-shadow(0 16px 18px rgba(43, 10, 61, 0.16)) !important;
+  animation: none !important;
+}
+
+body.home-page[data-acai-redesign] .hero-note {
+  color: #6b625c !important;
+}
+
+body.home-page[data-acai-redesign] .hero .button-green,
+body.home-page[data-acai-redesign] .promo-ribbon .button-green,
+body.home-page[data-acai-redesign] .loyalty-promo .button {
+  border-radius: 7px;
+  box-shadow: none;
+}
+
+body.home-page[data-acai-redesign] .promo-ribbon {
+  border: 0;
+  border-left: 4px solid #55266b;
+  border-radius: 5px;
+  background: #f0eadf !important;
+  box-shadow: none;
+  color: #291e2f !important;
+}
+
+body.home-page[data-acai-redesign] .promo-ribbon .eyebrow {
+  display: none;
+}
+
+body.home-page[data-acai-redesign] .promo-ribbon h2 {
+  margin: 0 0 5px;
+  color: #2a1034 !important;
+  font-family: "Sora", sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+body.home-page[data-acai-redesign] .promo-ribbon p {
+  color: #625966 !important;
+  line-height: 1.5;
+}
+
+body.home-page[data-acai-redesign] .model-eyebrow {
+  display: none;
+}
+
+body.home-page[data-acai-redesign] .model-order :is(h2, h3, .model-modal-head h2, .model-builder-image h2, .model-checkout-body h3) {
+  font-family: "Sora", sans-serif !important;
+  letter-spacing: -0.025em;
+}
+
+body.home-page[data-acai-redesign] .model-product-card {
+  border-radius: 11px;
+  box-shadow: none;
+  transition: border-color 160ms ease;
+}
+
+
+body.home-page[data-acai-redesign] .model-product-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body.home-page[data-acai-redesign] .model-product-card:hover {
+    border-color: #b9a9bd;
+  }
+}
+
+body.home-page[data-acai-redesign] .model-product-photo > span {
+  top: auto;
+  bottom: 10px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(25, 13, 29, 0.9);
+}
+
+body.home-page[data-acai-redesign] .model-tabs button,
+body.home-page[data-acai-redesign] .model-status,
+body.home-page[data-acai-redesign] .model-add,
+body.home-page[data-acai-redesign] .model-more {
+  border-radius: 6px;
+}
+
+body.home-page[data-acai-redesign] .model-add,
+body.home-page[data-acai-redesign] .model-more {
+  border: 1px solid var(--model-border, #e4d9e8);
+  background: transparent;
+  color: var(--model-primary, #55266b);
+}
+
+
+body.home-page[data-acai-redesign] .model-add b {
+  display: none;
+}
+
+body.home-page[data-acai-redesign] .model-tabs button:focus-visible,
+body.home-page[data-acai-redesign] .model-add:focus-visible,
+body.home-page[data-acai-redesign] .model-more:focus-visible {
+  outline: 3px solid var(--model-focus, #7a3c98);
+  outline-offset: 3px;
+}
+
+body.home-page[data-acai-redesign] .loyalty-promo {
+  border-left: 4px solid #a7cf55;
+  border-radius: 5px;
+  background: #f0eadf;
+  box-shadow: none;
+}
+
+body.home-page[data-acai-redesign] .loyalty-icon,
+body.home-page[data-acai-redesign] .loyalty-promo .eyebrow,
+body.home-page[data-acai-redesign] .reviews-section .section-heading .eyebrow {
+  display: none;
+}
+
+body.home-page[data-acai-redesign] .loyalty-promo h2,
+body.home-page[data-acai-redesign] .reviews-section .section-heading h2 {
+  color: #2a1034;
+  font-family: "Sora", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+body.home-page[data-acai-redesign] .reviews-section {
+  background: #f8f3e9 !important;
+}
+
+body.home-page[data-acai-redesign] .review-form {
+  border: 1px solid #e4d9e8;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+body.home-page[data-acai-redesign] .instagram-strip p {
+  color: #625966;
+}
+
+html[data-theme="dark"] body.home-page[data-acai-redesign] .hero {
+  background: #1e1524 !important;
+  color: #f6edf8;
+}
+
+
+html[data-theme="dark"] body.home-page[data-acai-redesign] .hero h1,
+html[data-theme="dark"] body.home-page[data-acai-redesign] .promo-ribbon h2,
+html[data-theme="dark"] body.home-page[data-acai-redesign] .loyalty-promo h2,
+html[data-theme="dark"] body.home-page[data-acai-redesign] .reviews-section .section-heading h2 {
+  color: #f6edf8 !important;
+}
+
+html[data-theme="dark"] body.home-page[data-acai-redesign] .hero-copy > p:not(.hero-note),
+html[data-theme="dark"] body.home-page[data-acai-redesign] .hero-note,
+html[data-theme="dark"] body.home-page[data-acai-redesign] .promo-ribbon p {
+  color: #d3c7d8 !important;
+}
+
+
+html[data-theme="dark"] body.home-page[data-acai-redesign] .promo-ribbon,
+html[data-theme="dark"] body.home-page[data-acai-redesign] .loyalty-promo {
+  border-color: #a7cf55;
+  background: #2a2030 !important;
+  color: #f6edf8 !important;
+}
+
+html[data-theme="dark"] body.home-page[data-acai-redesign] .reviews-section {
+  background: #1b1420 !important;
+}
+
+html[data-theme="dark"] body.home-page[data-acai-redesign] .review-form {
+  border-color: #4a3853;
+  background: #24182b;
+}
+
+@media (max-width: 900px) {
+  body.home-page[data-acai-redesign] .hero {
+    min-height: 0;
+    padding: 34px max(5vw, 22px) 16px;
+    gap: 0;
+  }
+
+  body.home-page[data-acai-redesign] .hero h1 {
+    margin-bottom: 14px;
+    font-size: clamp(2.75rem, 10vw, 4rem);
+  }
+
+  body.home-page[data-acai-redesign] .hero-art {
+    height: 300px;
+    margin-top: 12px;
+  }
+
+  body.home-page[data-acai-redesign] .hero-photo {
+    height: min(290px, 100%);
+  }
+}
+
+@media (max-width: 520px) {
+  body.home-page[data-acai-redesign] .promo-ribbon {
+    padding: 18px 18px 18px 20px;
+  }
+
+  body.home-page[data-acai-redesign] .loyalty-promo {
+    padding: 18px;
+  }
+}
