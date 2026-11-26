@@ -103,7 +103,20 @@ export function createApp() {
       next(err);
     }
   });
-  app.use(express.static(path.join(__dirname, '..', 'public')));
+  // CSS e JavaScript recebem ?v=<BUILD_ID> a cada deploy; podem ser cacheados até a versão mudar.
+  // HTML, APIs, imagens e service worker mantêm suas próprias políticas de atualização.
+  app.use(express.static(path.join(__dirname, '..', 'public'), {
+    setHeaders: (res, filePath) => {
+      if (/\.(?:css|js)$/i.test(filePath)) {
+        // Só páginas que receberam BUILD_ID do servidor podem usar cache imutável.
+        // Algumas páginas secundárias ainda têm query strings fixas no HTML.
+        if (res.req?.query?.v === BUILD_ID)
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable, s-maxage=31536000');
+        else
+          res.setHeader('Cache-Control', 'public, max-age=0');
+      }
+    }
+  }));
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', app: 'Açaí da Roça' }));
   // Checa o banco com um SELECT 1 e limite de 5 s. Fica separado do /api/health de propósito: o Neon suspende o banco
   // quando ocioso e a primeira consulta pode demorar; se o Render usasse esta rota como health check, poderia
