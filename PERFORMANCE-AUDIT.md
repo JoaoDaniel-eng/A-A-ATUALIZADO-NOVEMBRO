@@ -15,11 +15,13 @@
 1. Incluído preload prioritário de `/api/menu` no HTML para iniciar a busca antes da execução dos scripts do cardápio.
 2. Aplicado cache de um ano, `immutable`, apenas a CSS/JS cuja query `v` corresponde ao `BUILD_ID` atual. Links com versão fixa ou sem versão ficam com `max-age=0`; HTML, APIs, imagens e service worker não recebem cache imutável.
 3. Corrigida a precedência da seleção de fotos: o nome do produto é avaliado antes do fallback por categoria, inclusive para os nomes presentes na resposta pública observada.
+4. No checkout, os dados são sincronizados ao avançar e as validações passaram a indicar separadamente se falta nome, WhatsApp, endereço ou bairro, em vez de agrupar tudo numa mensagem que parecia apontar para nome/telefone.
 
 ## Verificações
 
 - `npm test`: **186 testes aprovados, 0 falhas**.
 - `npm run lint`: concluído sem erros.
+- Fluxo de checkout testado no navegador com APIs totalmente simuladas: o nome/telefone chegaram ao payload interceptado e validações para nome, endereço e bairro exibiram mensagens específicas. Nenhum pedido real foi enviado.
 - Em servidor local: CSS/JS com `v=<BUILD_ID>` retornaram `max-age=31536000, immutable`; CSS/JS sem essa versão, imagens e HTML secundário permaneceram em `max-age=0` ou `no-cache`.
 - Reprodução controlada com os dados públicos: foram renderizados 8 cards com **8 URLs de imagem distintas**. Os oito arquivos de imagem correspondentes responderam HTTP 200 no site publicado.
 - Em um único par de execuções no navegador, o preload iniciou `/api/menu` cerca de 12 ms após a navegação, contra cerca de 3,6 s sem preload; cada execução fez uma única requisição ao endpoint. O tempo total até os cards foi 4,2 s com preload e 5,4 s sem preload nessa amostra. Como é apenas um par e a rede varia, o tempo total não deve ser tratado como ganho garantido.

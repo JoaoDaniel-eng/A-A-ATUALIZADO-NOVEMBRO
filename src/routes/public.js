@@ -13,6 +13,7 @@ import { BUILD_ID } from '../services/build.js';
 import { buildScheduleSlots } from '../services/schedule.js';
 import { optionalCustomerId } from '../middleware/auth.js';
 import { couponProblem, findCouponByCode } from '../services/welcomeCoupon.js';
+import { publicProductType } from '../services/menu.js';
 const allowReview = createRateLimiter({ max: 5, windowMs: 60 * 60 * 1000 });
 const router = Router();
 const clientErrorLimiter = createAttemptLimiter({ max: 20, windowMs: 10 * 60 * 1000 });
@@ -60,7 +61,7 @@ router.get('/menu', async (_req, res, next) => {
       db.query('SELECT r.size_id,r.quantity,i.quantity AS stock FROM inventory_recipes r JOIN inventory_items i ON i.id=r.inventory_item_id WHERE r.size_id IS NOT NULL AND i.active=true')
     ]);
     const soldOut = soldOutSizeIds(stock.rows);
-    res.json({ products: p.rows.map(product => ({ ...product, sizes: s.rows.filter(x => x.product_id === product.id).map(({ stock_quantity: stockQuantity, ...x }) => {
+    res.json({ products: p.rows.map(product => ({ ...product, type: publicProductType(product), sizes: s.rows.filter(x => x.product_id === product.id).map(({ stock_quantity: stockQuantity, ...x }) => {
       // Estoque por unidade (trufados): `stock` é null quando o tamanho não é controlado; `stockLabel` traz o aviso "Os 3 últimos!".
       const unit = unitStockState(stockQuantity);
       return { ...x, stock: unit.left, stockLabel: unit.label, soldOut: soldOut.has(Number(x.id)) || unit.soldOut };
