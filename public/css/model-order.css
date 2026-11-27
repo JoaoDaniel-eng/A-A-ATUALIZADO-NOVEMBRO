@@ -49,9 +49,8 @@ html[data-theme="dark"] .model-builder-image h2,
 html[data-theme="dark"] .model-modal-head h2,
 html[data-theme="dark"] .model-checkout-body h3 { color: #fff !important; }
 
-/* Enquadramento das fotos: mostrar o copo tradicional inteiro e elevar levemente as demais. */
-.model-product-photo img:not([src*="acai-tradicional-cliente"]){object-position:center 60%}
-.model-product-photo img[src*="acai-tradicional-cliente"]{object-fit:contain;object-position:center;background:#f0e8f3}
+/* Enquadramento: preservar a foto inteira para não cortar o copo nos cards. */
+.model-product-photo img{object-fit:contain;object-position:center;background:#f0e8f3}
 
 
 /* As fotos verticais dos sorvetes ganham um pouco mais de área para deixar o copo visível no card. */
